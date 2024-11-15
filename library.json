@@ -1,0 +1,16 @@
+{
+  "name": "DelayFunctions",
+  "description": "Use delay functions with out full code pause.",
+  "keywords": "delay, millis, functions, time functions",
+  "authors": {
+    "name": "Jaakko Talvitie",
+    "url": "https://jaakkotalvitie.fi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaakka/DelayFunctionsForArduino"
+  },
+  "version": "0.0.1",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
