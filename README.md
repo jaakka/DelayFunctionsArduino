@@ -44,13 +44,12 @@ This library helps streamline complex timing operations and keeps your code orga
 - **Example:**
   ```cpp
   delayObj.NewDelayFunction(1000, myCallback); // Executes myCallback every 1000ms
-```
+
 ### 3. `void updateTime(void (*callback)(), unsigned long interval)`
 - **Description:** Updates the interval of an existing timer associated with the given `callback`.
 - **Example:**
   ```cpp
   delayObj.updateTime(myCallback, 500); // Changes interval to 500ms
-```
 
 ### 4. `void loop()`
 - **Description:** Call this method in the main `loop()` function to keep the timers running and execute callbacks when needed.
