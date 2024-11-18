@@ -1,222 +1,75 @@
 #include "Arduino.h"
-#include "W211Control.h"
-#include "W211Enums.h"
+#include "DelayFunctions.h"
 
-W211Control::W211Control(MCP_CAN canB) 
+// Konstruktori, joka alustaa ajastimien määrän ja varaa muistia
+DelayFunctions::DelayFunctions(int argTimersCount)
 {
-    _canB = canB;
-    _bAvailable = true;
+    _maxTimersCount = argTimersCount;  // Asetetaan enimmäismäärä
+    timeFunctions = new DelayFunction[_maxTimersCount];  // Dynaaminen muistivaraus ajastimille
+    _timersCount = 0;  // Alustetaan ajastimien määrä nollaksi
 }
 
-W211Control::W211Control(MCP_CAN canB, MCP_CAN canC) 
+// Destruktori, joka vapauttaa dynaamisesti varatun muistin
+DelayFunctions::~DelayFunctions()
 {
-    _canB = canB;
-    _canC = canC;
-    _bAvailable = true;
-    _cAvailable = true;
+    delete[] timeFunctions;  // Vapautetaan muistivaraus
 }
 
-void W211Control::simulateKey(KeyStatus keyStatus) 
+// Päivittää ajastimen aikarajan ja callback-funktion
+void DelayFunctions::updateTime(void (*cb)(), unsigned long interval)
 {
-    if(!_simulateKey)
+    for (int i = 0; i < _timersCount; i++)
     {
-        _keyStatus =  keyStatus;
-        _simulateKey = true;
-        Outputln(true,"Key simulator started.");
-    }
-        else
-    {
-        Outputln(true,"Key simulator already started.");
-    }
-}
-
-void W211Control::simulateSpeed(int speed)
-{
-    if(!_simulateLeftFrontSpeed && !_simulateRightFrontSpeed && !_simulateLeftRearSpeed && !_simulateRightRearSpeed)
-    {
-        W211Control::simulateFrontLeftSpeed(speed);
-        W211Control::simulateFrontRightSpeed(speed); 
-        W211Control::simulateRearLeftSpeed(speed); 
-        W211Control::simulateRearRightSpeed(speed);
-
-        Outputln(true,"Simulator started for all wheels.");
-    } 
-        else
-    {
-        Outputln(true,"Simulator is already started for all wheels.");
-    }
-}
-
-void W211Control::turnSpeedSimulatorOff()
-{
-    if(_simulateLeftFrontSpeed || _simulateRightFrontSpeed || _simulateLeftRearSpeed || _simulateRightRearSpeed)
-    {
-        W211Control::turnFrontLeftSpeedSimulatorOff();
-        W211Control::turnFrontRightSpeedSimulatorOff();
-        W211Control::turnRearLeftSpeedSimulatorOff();
-        W211Control::turnRearRightSpeedSimulatorOff();
-
-        Outputln(true,"Simulator is now turned off for all wheels.");
-    }
-        else
-    {
-        Outputln(true,"Simulator is already stopped for all wheels.");
-    }
-}
-
-void W211Control::simulateFrontLeftSpeed(int speed)
-{
-    if(!_simulateLeftFrontSpeed)
-    {
-        _simulateLeftFrontSpeed = true; 
-        Outputln(true,"Simulator is started for front left wheel. ("+String(speed)+"km/h)");
-    }
-        else
-    {
-        Outputln(true,"Simulator is already started for front left wheel.");
-    }
-}
-
-void W211Control::turnFrontLeftSpeedSimulatorOff();
-{
-    _simulateLeftFrontSpeed = false;
-}
-
-void W211Control::simulateFrontRightSpeed(int speed); 
-{
-    if(!_simulateRightFrontSpeed)
-    {
-        _simulateRightFrontSpeed = true; 
-        Outputln(true,"Simulator is started for front right wheel. ("+String(speed)+"km/h)");
-    }
-        else
-    {
-        Outputln(true,"Simulator is already started for front right wheel.");
-    }
-}
-
-void W211Control::turnFrontRightSpeedSimulatorOff();
-{
-    _simulateLeftFrontSpeed = false;
-}
-
-void W211Control::simulateRearLeftSpeed(int speed); 
-{
-    if(!_simulateLeftRearSpeed)
-    {
-        _simulateLeftRearSpeed = true; 
-        Outputln(true,"Simulator is started for rear left wheel. ("+String(speed)+"km/h)");
-    }
-        else
-    {
-        Outputln(true,"Simulator is already started for rear left wheel.");
-    }
-}
-
-void W211Control::turnRearLeftSpeedSimulatorOff();
-{
-    _simulateLeftFrontSpeed = false;
-}
-
-void W211Control::simulateRearRightSpeed(int speed); 
-{
-    if(!_simulateRightRearSpeed)
-    {
-        _simulateRightRearSpeed = true; 
-        Outputln(true,"Simulator is started for rear right wheel. ("+String(speed)+"km/h)");
-    }
-        else
-    {
-        Outputln(true,"Simulator is already started for rear right wheel.");
-    }
-}
-
-void W211Control::turnRearRightSpeedSimulatorOff();
-{
-    _simulateLeftFrontSpeed = false;
-}
-
-void W211Control::turnKeySimulatorOff()
-{
-    if(_simulateKey)
-    {
-        _keyStatus = KeyStatus::NotInserted;
-        _simulateKey = false;
-        Outputln(true,"Key simulator is turned off.");
-    }
-        else
-    {
-        Outputln(true,"Key simulator already turned off.");
-    }
-}
-
-void W211Control::enableDebugMsgs()
-{
-    _output = true;
-    Outputln(true,"Debug messages is now enabled.");
-}
-
-void W211Control::disableDebugMsgs()
-{
-    Outputln(true,"Debug messages is now disabled.");
-    _output = false;
-}
-
-void W211Control::Outputln(bool prexEnabled, String msg) 
-{
-    if(_output)
-    {
-        if(prexEnabled)
+        if (timeFunctions[i].callback == cb)  // Jos callback-muuttuja vastaa
         {
-            Serial.println(String(_prex)+msg);
-        }
-        else
-        {
-            Serial.println(msg);
+            timeFunctions[i].interval = interval;  // Päivitetään ajastimen interval
         }
     }
 }
 
-void W211Control::Output(String msg) 
+// Lisää uuden ajastimen ajastinluetteloon
+void DelayFunctions::NewDelayFunction(unsigned long interval, void (*cb)())
 {
-    if(_output)
+    if (_timersCount < _maxTimersCount)
     {
-        Serial.print(msg);
+        timeFunctions[_timersCount] = DelayFunction(cb, interval);
+        timeFunctions[_timersCount].lastRun = millis();  // Alustetaan viimeinen suoritushetki
+        _timersCount++;
+    }
+    else
+    {
+        Serial.println("Max timers reached! Cannot add more timers.");
     }
 }
 
-void W211Control::loop() 
+// Kutsutaan pääloopissa ja tarkistaa ajastimet
+void DelayFunctions::loop()
 {
-    W211Control::PowerLoop();
-}
-
-void W211Control::PowerLoop() 
-{
-    if(_lastPowerMsgTime + 1000 < millis() && _simulateKey)
+    unsigned long currentMillis = millis();  // Haetaan nykyinen aika
+    for (int i = 0; i < _timersCount; i++)
     {
-        _lastPowerMsgTime = millis();
-        int keyMsg = 0x0; //  case KeyStatus.NotInserted:
-
-        switch (_keyStatus)
+        // Tarkistetaan, onko ajastin ehtinyt aikarajan
+        if (currentMillis - timeFunctions[i].lastRun >= timeFunctions[i].interval)
         {
-            case KeyStatus::Inserted:
-                keyMsg = 0x1;
-            break;
-
-            case KeyStatus::HalfPower:
-                keyMsg = 0x3;
-            break;
-
-            case KeyStatus::FullPower:
-                keyMsg = 0x15;
-            break;
-        }
-
-        unsigned char CanMsg[] = {keyMsg,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
-        for (int i = 0; i < 20; i++) 
-        {
-            _canB.sendMsgBuf(0x00, 0, 8, CanMsg);
+            if (timeFunctions[i].callback != nullptr)
+            {
+                timeFunctions[i].callback();  // Kutsutaan ajastimen callback
+                timeFunctions[i].lastRun = currentMillis;  // Päivitetään viimeinen suoritushetki
+            }
         }
     }
 }
 
+// DelayFunction-konstruktori, joka alustaa ajastimen
+DelayFunction::DelayFunction()
+{
+    interval = 0;
+    callback = nullptr;
+}
+
+// Parametrillinen konstruktori, joka asettaa callbackin ja intervalin
+DelayFunction::DelayFunction(void (*_callback)(), unsigned long _interval)
+{
+    callback = _callback;
+    interval = _interval;
+}

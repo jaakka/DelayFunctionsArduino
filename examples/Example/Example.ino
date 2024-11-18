@@ -1,22 +1,39 @@
-#include <W211Control.h>
-#include <mcp_can.h>
-#include <SPI.h>
+#include <DelayFunctions.h>
 
-MCP_CAN canB(10);
-MCP_CAN canC(6);
+//save memory with correct count of timers.
+DelayFunctions delayObj(4); //how many timers.
 
-W211Control W211Controller(canB,canC);
+void exampleFunctionForHalfSecond()
+{
+  Serial.println("HalfSecond");
+}
+
+void exampleFunctionForOneSecond()
+{
+  Serial.println("Second");
+}
+
+void exampleFunctionForFiveSecond()
+{
+  Serial.println("FiveSecond");
+}
+
+void exampleFunctionForTenSecond()
+{
+  Serial.println("TenSecond");
+}
 
 void setup() 
 {
-  while (CAN_OK != canB.begin(CAN_83K3BPS)){Serial.println("CAN B init fail");  delay(500); }  
-  while (CAN_OK != canC.begin(CAN_500KBPS)){Serial.println("CAN C init fail");  delay(500); }  
-  Serial.begin(115200);
-  W211Controller.enableDebugMsgs();
-  W211Controller.simulateKey(KeyStatus::FullPower);
+  Serial.begin(9600);
+  delayObj.NewDelayFunction(500, exampleFunctionForHalfSecond);
+  delayObj.NewDelayFunction(1000, exampleFunctionForOneSecond);
+  delayObj.NewDelayFunction(5000, exampleFunctionForFiveSecond);
+  delayObj.NewDelayFunction(10000, exampleFunctionForTenSecond);
+  Serial.println("Start");
 }
 
 void loop() 
 {
-  W211Controller.loop();
+  delayObj.loop();
 }
