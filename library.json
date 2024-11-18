@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/jaakka/DelayFunctionsForArduino"
   },
-  "version": "0.0.1",
+  "version": "1.0.0",
   "frameworks": "arduino,esp32",
   "platforms": "*"
 }
