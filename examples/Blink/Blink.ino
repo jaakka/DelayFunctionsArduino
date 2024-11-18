@@ -1,7 +1,10 @@
 /*
     DelayFunctions, is designed for managing multiple software timers in Arduino projects.
+    
+    In this example, the timer function is demonstrated by blinking an LED.
+
     https://github.com/jaakka/DelayFunctionsArduino
-    Created by Jaakko Talvitie 18.11.2024
+    Library created by Jaakko Talvitie 18.11.2024
 */
 
 #include <DelayFunctions.h>

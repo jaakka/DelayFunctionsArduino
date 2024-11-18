@@ -1,3 +1,12 @@
+/*
+    DelayFunctions, is designed for managing multiple software timers in Arduino projects.
+    
+    In this example, it is demonstrated how you can change the speed of the timer function. (after start)
+
+    https://github.com/jaakka/DelayFunctionsArduino
+    Library created by Jaakko Talvitie 18.11.2024
+*/
+
 #include <DelayFunctions.h>
 
 //FOR ARDUINO #define ledPin = LED_BUILTIN;  
