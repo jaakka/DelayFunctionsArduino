@@ -1,3 +1,6 @@
 DelayFunctions	KEYWORD1
 
 loop	KEYWORD2
+NewDelayFunction	KEYWORD2
+updateTime	KEYWORD2
+getTime	KEYWORD2

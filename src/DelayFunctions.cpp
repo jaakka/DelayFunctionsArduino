@@ -15,7 +15,7 @@ DelayFunctions::~DelayFunctions()
     delete[] timeFunctions;  // Vapautetaan muistivaraus
 }
 
-// Päivittää ajastimen aikarajan ja callback-funktion
+// Päivittää ajastimen aikarajan 
 void DelayFunctions::updateTime(void (*cb)(), unsigned long interval)
 {
     for (int i = 0; i < _timersCount; i++)
@@ -25,6 +25,19 @@ void DelayFunctions::updateTime(void (*cb)(), unsigned long interval)
             timeFunctions[i].interval = interval;  // Päivitetään ajastimen interval
         }
     }
+}
+
+// Hankkii ajastimen aikarajan
+unsigned long DelayFunctions::getTime(void (*cb)())
+{
+    for (int i = 0; i < _timersCount; i++)
+    {
+        if (timeFunctions[i].callback == cb)  // Jos callback-muuttuja vastaa
+        {
+            return timeFunctions[i].interval;  // Palautetaan ajastimen interval
+        }
+    }
+    return -1;
 }
 
 // Lisää uuden ajastimen ajastinluetteloon
