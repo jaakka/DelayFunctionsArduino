@@ -60,8 +60,6 @@ This library helps streamline complex timing operations and keeps your code orga
     delayObj.loop();
   }
 ```
-
-
 ## Example Usage
 
 Here's a simple example to toggle an LED every second:
