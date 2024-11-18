@@ -59,12 +59,13 @@ This library helps streamline complex timing operations and keeps your code orga
   void loop() {
     delayObj.loop();
   }
-```
+
 ## Example Usage
 
 Here's a simple example to toggle an LED every second:
 
-```cpp
+cpp
+```
 #include <DelayFunctions.h>
 
 #define ledPin 2  // Use LED_BUILTIN for Arduino, pin 2 for ESP boards
