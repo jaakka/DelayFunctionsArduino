@@ -4,6 +4,8 @@ The **DelayFunctions** library is a versatile tool for managing multiple softwar
 
 The library is designed to handle the overflow of `millis()`. However, this has not been tested, but in practice, it should work.
 
+Please give my project a star if you like it or find it useful.
+
 ---
 
 ## Key Features
