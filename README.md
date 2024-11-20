@@ -2,7 +2,7 @@
 
 The **DelayFunctions** library is a versatile tool for managing multiple software timers in Arduino and ESP projects. It provides a clean, non-blocking, and efficient way to handle timed events, making it ideal for tasks like LED blinking, button debouncing, or periodic updates.
 
-
+The library is designed to handle the overflow of `millis()`. However, this has not been tested, but in practice, it should work.
 
 ---
 
